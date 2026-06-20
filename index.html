@@ -86,16 +86,81 @@
                 transform: translateY(100vh) scale(0);
                 opacity: 0;
             }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
             100% {
                 transform: translateY(-100vh) scale(1);
                 opacity: 0;
             }
+        }
+
+        /* Enter Screen */
+        .enter-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .enter-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .enter-title {
+            font-size: 64px;
+            font-weight: 700;
+            color: var(--stranger-red);
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin-bottom: 16px;
+            text-shadow: 0 0 60px rgba(230, 36, 41, 0.5);
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        .enter-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            letter-spacing: 2px;
+        }
+
+        .enter-btn {
+            padding: 16px 48px;
+            background: linear-gradient(135deg, var(--stranger-red), var(--stranger-red-glow));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(230, 36, 41, 0.4);
+        }
+
+        .enter-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(230, 36, 41, 0.6);
+        }
+
+        .enter-btn:active {
+            transform: scale(0.98);
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.2); }
         }
 
         .container {
@@ -107,6 +172,81 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+        }
+
+        /* Audio Controls */
+        .audio-controls {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 12px 20px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+
+        .audio-controls:hover {
+            border-color: var(--stranger-red);
+            box-shadow: 0 8px 30px rgba(230, 36, 41, 0.2);
+        }
+
+        .audio-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+        }
+
+        .audio-btn:hover {
+            background: var(--stranger-red);
+            border-color: var(--stranger-red);
+        }
+
+        .audio-btn.playing {
+            background: var(--stranger-red);
+            border-color: var(--stranger-red);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(230, 36, 41, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(230, 36, 41, 0); }
+        }
+
+        .volume-slider {
+            width: 100px;
+            height: 4px;
+            background: var(--border-subtle);
+            border-radius: 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .volume-fill {
+            height: 100%;
+            background: var(--stranger-red);
+            border-radius: 2px;
+            width: 50%;
+            transition: width 0.2s ease;
+        }
+
+        .audio-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         /* Header */
@@ -146,11 +286,6 @@
             animation: titleGlow 3s ease-in-out infinite;
         }
 
-        @keyframes titleGlow {
-            0%, 100% { filter: brightness(1); }
-            50% { filter: brightness(1.2); }
-        }
-
         .subtitle {
             font-size: 18px;
             color: var(--text-secondary);
@@ -167,7 +302,6 @@
             gap: 60px;
         }
 
-        /* Episode cards */
         .section-title {
             font-size: 28px;
             font-weight: 600;
@@ -391,10 +525,39 @@
             .quote-text::after {
                 display: none;
             }
+
+            .enter-title {
+                font-size: 42px;
+            }
+
+            .audio-controls {
+                bottom: 20px;
+                right: 20px;
+                padding: 10px 16px;
+            }
+
+            .volume-slider {
+                width: 80px;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Audio Elements -->
+    <audio id="bg-music" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/10/05/audio_674cafc9f8.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    <audio id="sfx-hover">
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7a2c8b8e8e.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="sfx-click">
+        <source src="https://cdn.pixabay.com/download/audio/2022/03/24/audio_c8a3e8e8e8.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Floating Particles -->
     <div class="particles">
         <div class="particle"></div>
         <div class="particle"></div>
@@ -405,6 +568,26 @@
         <div class="particle"></div>
         <div class="particle"></div>
         <div class="particle"></div>
+    </div>
+
+    <!-- Enter Screen -->
+    <div class="enter-screen" id="enter-screen">
+        <h1 class="enter-title">Stranger Things</h1>
+        <p class="enter-subtitle">Enter the Upside Down</p>
+        <button class="enter-btn" id="enter-btn">
+            🎵 Enter with Music
+        </button>
+    </div>
+
+    <!-- Audio Controls -->
+    <div class="audio-controls">
+        <div class="audio-btn" id="play-pause-btn" title="Play/Pause">
+            ▶️
+        </div>
+        <span class="audio-label">Music</span>
+        <div class="volume-slider" id="volume-slider">
+            <div class="volume-fill" id="volume-fill"></div>
+        </div>
     </div>
 
     <div class="container">
@@ -477,5 +660,115 @@
             <p style="margin-top: 8px; opacity: 0.5;">This is a tribute page. All rights belong to Netflix and the Duffer Brothers.</p>
         </footer>
     </div>
+
+    <script>
+        // Audio elements
+        const bgMusic = document.getElementById('bg-music');
+        const sfxHover = document.getElementById('sfx-hover');
+        const sfxClick = document.getElementById('sfx-click');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeFill = document.getElementById('volume-fill');
+        const enterScreen = document.getElementById('enter-screen');
+        const enterBtn = document.getElementById('enter-btn');
+
+        let isPlaying = false;
+        let volume = 0.5;
+
+        // Initialize volume
+        bgMusic.volume = volume;
+        volumeFill.style.width = (volume * 100) + '%';
+
+        // Enter screen - start music on user interaction
+        enterBtn.addEventListener('click', () => {
+            playMusic();
+            enterScreen.classList.add('hidden');
+            
+            // Play subtle enter sound
+            sfxClick.volume = 0.3;
+            sfxClick.play().catch(() => {});
+        });
+
+        // Play/Pause toggle
+        playPauseBtn.addEventListener('click', () => {
+            if (isPlaying) {
+                pauseMusic();
+            } else {
+                playMusic();
+            }
+            playSoundEffect(sfxClick, 0.3);
+        });
+
+        function playMusic() {
+            bgMusic.play().then(() => {
+                isPlaying = true;
+                playPauseBtn.textContent = '⏸️';
+                playPauseBtn.classList.add('playing');
+            }).catch(error => {
+                console.log('Audio playback failed:', error);
+            });
+        }
+
+        function pauseMusic() {
+            bgMusic.pause();
+            isPlaying = false;
+            playPauseBtn.textContent = '▶️';
+            playPauseBtn.classList.remove('playing');
+        }
+
+        // Volume control
+        volumeSlider.addEventListener('click', (e) => {
+            const rect = volumeSlider.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percentage = Math.max(0, Math.min(1, x / rect.width));
+            volume = percentage;
+            bgMusic.volume = volume;
+            volumeFill.style.width = (volume * 100) + '%';
+            playSoundEffect(sfxClick, 0.3);
+        });
+
+        // Sound effects on card interactions
+        document.querySelectorAll('.episode-card, .character-card, .enter-btn, .audio-btn').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                playSoundEffect(sfxHover, 0.15);
+            });
+        });
+
+        function playSoundEffect(audioElement, vol) {
+            audioElement.currentTime = 0;
+            audioElement.volume = vol;
+            audioElement.play().catch(() => {});
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !enterScreen.classList.contains('hidden')) {
+                e.preventDefault();
+                enterBtn.click();
+            } else if (e.code === 'Space' && enterScreen.classList.contains('hidden')) {
+                e.preventDefault();
+                playPauseBtn.click();
+            } else if (e.code === 'ArrowUp') {
+                e.preventDefault();
+                volume = Math.min(1, volume + 0.1);
+                bgMusic.volume = volume;
+                volumeFill.style.width = (volume * 100) + '%';
+            } else if (e.code === 'ArrowDown') {
+                e.preventDefault();
+                volume = Math.max(0, volume - 0.1);
+                bgMusic.volume = volume;
+                volumeFill.style.width = (volume * 100) + '%';
+            }
+        });
+
+        // Visual feedback for audio state
+        bgMusic.addEventListener('play', () => {
+            playPauseBtn.classList.add('playing');
+        });
+
+        bgMusic.addEventListener('pause', () => {
+            playPauseBtn.classList.remove('playing');
+        });
+    </script>
 </body>
 </html>
